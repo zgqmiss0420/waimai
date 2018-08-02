@@ -122,7 +122,7 @@
           overflow hidden
           vertical-align top
           .icon-person
-            background #e4e4e4
+            color #e4e4e4
             font-size 62px
         .user-info
           float left
