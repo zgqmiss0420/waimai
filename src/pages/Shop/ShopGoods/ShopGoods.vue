@@ -2,7 +2,7 @@
   <div>
     <div class="goods">
       <div class="menu-wrapper">
-        <ul>
+        <ul ref="menuUl">
           <li class="menu-item" :class="{current : index === currentIndex}" v-for="(good,index) in goods" :key="index" @click="clickItem(index)">
           <span class="text bottom-border-1px">
             <img class="icon" :src="good.icon" v-show="good.icon">
@@ -17,7 +17,7 @@
             <h1 class="title">{{good.name}}</h1>
             <ul>
               <li class="food-item bottom-border-1px" v-for="(food,index) in good.foods" :key="index">
-                <div class="icon">
+                <div class="icon"  @click="showFood(food)">
                   <img width="57" height="57"
                        :src="food.icon">
                 </div>
@@ -29,29 +29,10 @@
                     <span>好评率{{food.rating}}%</span></div>
                   <div class="price">
                     <span class="now">￥{{food.price}}</span>
+                    <span class="old" v-show="food.oldPrice">￥{{food.oldPrice}}</span>
                   </div>
                   <div class="cartcontrol-wrapper">
-                    CartControl组件
-                  </div>
-                </div>
-              </li>
-              <li class="food-item bottom-border-1px">
-                <div class="icon">
-                  <img width="57" height="57"
-                       src="http://fuss10.elemecdn.com/d/22/260bd78ee6ac6051136c5447fe307jpeg.jpeg?imageView2/1/w/114/h/114">
-                </div>
-                <div class="content">
-                  <h2 class="name">红豆薏米美肤粥</h2>
-                  <p class="desc">甜粥</p>
-                  <div class="extra">
-                    <span class="count">月售86份</span>
-                    <span>好评率100%</span>
-                  </div>
-                  <div class="price">
-                    <span class="now">￥12</span>
-                  </div>
-                  <div class="cartcontrol-wrapper">
-                    CartControl组件
+                    <CartControl :food="food"/>
                   </div>
                 </div>
               </li>
@@ -59,18 +40,24 @@
           </li>
         </ul>
       </div>
+      <ShopCart/>
     </div>
+    <Food :food="food" ref="food"/>
   </div>
 </template>
 
 <script>
   import {mapState} from 'vuex'
   import BScroll from 'better-scroll'
+  import CartControl from '../../../components/CartControl/CartControl'
+  import Food from '../../../components/Food/Food.vue'
+  import ShopCart from '../../../components/ShopCart/ShopCart.vue'
   export default {
     data () {
       return {
         scrollY : 0,
-        tops : []
+        tops : [],
+        food:{}
       }
     },
     mounted () {
@@ -88,12 +75,16 @@
       currentIndex () {
         const {scrollY,tops} = this
 
-        return tops.findIndex((top,index) => scrollY >= top && scrollY < tops[index+1])
+        const index = tops.findIndex((top,index) => scrollY >= top && scrollY < tops[index+1])
+
+        this._scrollLeftList(index)
+
+        return index
       }
     },
     methods : {
       _initScroll () {
-        new BScroll('.menu-wrapper', {
+        this.leftScroll = new BScroll('.menu-wrapper', {
           click : true
         })
 
@@ -123,13 +114,31 @@
         })
         this.tops = tops
       },
+      _scrollLeftList(index) {
+        if(this.leftScroll){
+          const li =this.$refs.menuUl.children[index]
+
+          this.leftScroll.scrollToElement(li,300)
+        }
+      },
       clickItem (index) {
         const top = this.tops[index]
 
         this.scrollY = top
         this.rightScroll.scrollTo(0,-top,500)
 
+      },
+      showFood (food) {
+        this.food = food
+
+        this.$refs.food.toggleShow()  //父组件调用子组件的方法
       }
+
+    },
+    components : {
+      CartControl,
+      Food,
+      ShopCart
     }
   }
 </script>
@@ -140,7 +149,7 @@
   .goods
     display: flex
     position: absolute
-    top: 250px
+    top: 245px
     bottom: 46px
     width: 100%
     background: #fff;

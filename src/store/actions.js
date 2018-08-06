@@ -1,4 +1,15 @@
-import {RECEIVE_ADDRESS,RECEIVE_CATEGORYS,RECEIVE_SHOPS,RECEIVE_USER,RESET_USER,RECEIVE_GOODS,RECEIVE_RATINGS,RECEIVE_INFO} from './mutation-types'
+import {
+  RECEIVE_ADDRESS,
+  RECEIVE_CATEGORYS,
+  RECEIVE_SHOPS,
+  RECEIVE_USER,
+  RESET_USER,
+  RECEIVE_GOODS,
+  RECEIVE_RATINGS,
+  RECEIVE_INFO,
+  INCREMENT_FOOD_COUNT,
+  DECREMENT_FOOD_COUNT
+} from './mutation-types'
 import {reqAddress,reqCategorys,reqShops,reqUser,reqLogout,reqGoods,reqRatings,reqInfo} from '../api'
 export default {
   async getAddress({commit,state}) {
@@ -56,22 +67,32 @@ export default {
   },
   
   // 异步获取评价列表
-  async getRatings ({commit, state}) {
+  async getRatings ({commit, state},cb) {
     // 调用接口请求函数从后台获取数据
     const result = await reqRatings()
     if(result.code===0) {
       const ratings = result.data
       commit(RECEIVE_RATINGS, {ratings})
+      cb && cb()
     }
   },
   
   // 异步获取商家信息
-  async getInfo ({commit, state}) {
+  async getInfo ({commit, state},cb) {
     // 调用接口请求函数从后台获取数据
     const result = await reqInfo()
     if(result.code===0) {
       const info = result.data
       commit(RECEIVE_INFO, {info})
+      cb && cb()
     }
   },
+  
+  updateFoodCount({commit,state}, {food,isAdd}){
+    if(isAdd){
+      commit(INCREMENT_FOOD_COUNT,{food})
+    }else{
+      commit(DECREMENT_FOOD_COUNT,{food})
+    }
+  }
 }

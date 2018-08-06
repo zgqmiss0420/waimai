@@ -30,7 +30,7 @@
     </div>
     <div class="shop-header-discounts" @click="isSupportsShow = true" v-if="info.supports">
       <div class="discounts-left">
-        <div class="activity"  :class="supportClasses[info.supports[0].type]">
+        <div class="activity"  :class="supportClasses[info.supports[1].type]">
           <span class="content-tag">
             <span class="mini-tag">{{info.supports[0].name}}</span>
           </span>
@@ -259,6 +259,15 @@
         .activity
           display flex
           align-items center
+          &.activity-green
+            .content-tag
+              background-color rgb(112, 188, 70)
+          &.activity-red
+            .content-tag
+              background-color rgb(240, 115, 115)
+          &.activity-orange
+            .content-tag
+              background-color: rgb(241, 136, 79)
           .content-tag
             border-radius 1px
             width 25px
